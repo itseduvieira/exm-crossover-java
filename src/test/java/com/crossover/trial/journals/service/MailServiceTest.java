@@ -38,4 +38,10 @@ public class MailServiceTest {
 		assertTrue(response.isPresent());
 		assertEquals(response.get().getStatusCode(), 202);
 	}
+
+	@Test
+	public void sendDailySuccess() {
+		mailService.sendDaily();
+		assertTrue(true);
+	}
 }
