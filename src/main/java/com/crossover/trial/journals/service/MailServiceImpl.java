@@ -48,21 +48,19 @@ public class MailServiceImpl implements MailService {
 		SendGrid sg = new SendGrid("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");
 		Request request = new Request();
 		
-		Response response = null;
-		
 		try {
 			request.setMethod(Method.POST);
 			request.setEndpoint("mail/send");
 			request.setBody(mail.build());
-			response = sg.api(request);
+			Response response = sg.api(request);
 			log.info(response.getStatusCode());
 			log.info(response.getBody());
 			log.info(response.getHeaders());
+			return  Optional.ofNullable(response);
 		} catch (IOException ex) {
 			log.error("Error at sending email to " + mailDTO.getTo(), ex);
+			return Optional.empty();
 		}
-		
-		return Optional.ofNullable(response);
 	}
 
 	@Override
