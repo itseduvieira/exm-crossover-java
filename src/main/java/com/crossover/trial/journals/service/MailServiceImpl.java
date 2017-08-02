@@ -93,7 +93,7 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public void sendToAllUsers(List<Journal> journalsPublishedYesterday) {
 		if (journalsPublishedYesterday.isEmpty()) {
-			log.debug("There is no new journals to send");
+			log.debug("There are no new journals to send");
 			return;
 		}
 
