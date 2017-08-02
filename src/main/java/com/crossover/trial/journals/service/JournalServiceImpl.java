@@ -112,17 +112,20 @@ public class JournalServiceImpl implements JournalService {
 	
 	@Override
 	public List<Journal> listFromYesterday() {
-		Calendar yesterday = new GregorianCalendar();
-		yesterday.set(Calendar.HOUR_OF_DAY, 0);
-		yesterday.set(Calendar.MINUTE, 0);
-		yesterday.set(Calendar.SECOND, 0);
-		yesterday.add(Calendar.DATE, -1);
+		Calendar yesterdayStart = new GregorianCalendar();
+		yesterdayStart.set(Calendar.HOUR_OF_DAY, 0);
+		yesterdayStart.set(Calendar.MINUTE, 0);
+		yesterdayStart.set(Calendar.SECOND, 0);
+		yesterdayStart.set(Calendar.MILLISECOND, 0);
+		yesterdayStart.add(Calendar.DATE, -1);
 		
-		Calendar today = new GregorianCalendar();
-		today.set(Calendar.HOUR_OF_DAY, 0);
-		today.set(Calendar.MINUTE, 0);
-		today.set(Calendar.SECOND, 0);
-		
-		return journalRepository.findByPublishDate(yesterday.getTime(), today.getTime());
+		Calendar yesterdayEnd = new GregorianCalendar();
+		yesterdayEnd.set(Calendar.HOUR_OF_DAY, 0);
+		yesterdayEnd.set(Calendar.MINUTE, 0);
+		yesterdayEnd.set(Calendar.SECOND, 0);
+		yesterdayEnd.set(Calendar.MILLISECOND, 0);
+		yesterdayEnd.add(Calendar.MILLISECOND, -1);
+
+		return journalRepository.findByPublishDate(yesterdayStart.getTime(), yesterdayEnd.getTime());
 	}
 }
