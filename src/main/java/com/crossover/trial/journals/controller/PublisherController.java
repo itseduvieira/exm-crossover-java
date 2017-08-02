@@ -50,22 +50,21 @@ public class PublisherController {
 			RedirectAttributes redirectAttributes, @AuthenticationPrincipal Principal principal) {
 
 		CurrentUser activeUser = (CurrentUser) ((Authentication) principal).getPrincipal();
-		Optional<Publisher> publisher = publisherRepository.findByUser(activeUser.getUser());
+		Publisher publisher = publisherRepository.findByUser(activeUser.getUser()).get();
 
 		String uuid = UUID.randomUUID().toString();
-		File dir = new File(getDirectory(publisher.get().getId()));
+		File dir = new File(getDirectory(publisher.getId()));
 		createDirectoryIfNotExist(dir);
 
-		File f = new File(getFileName(publisher.get().getId(), uuid));
+		File f = new File(getFileName(publisher.getId(), uuid));
 		if (!file.isEmpty()) {
-			try {
-				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
+			try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
 				FileCopyUtils.copy(file.getInputStream(), stream);
 				stream.close();
 				Journal journal = new Journal();
 				journal.setUuid(uuid);
 				journal.setName(name);
-				journalService.publish(publisher.get(), journal, categoryId);
+				journalService.publish(publisher, journal, categoryId);
 				return "redirect:/publisher/browse";
 			} catch (Exception e) {
 				redirectAttributes.addFlashAttribute("message",
