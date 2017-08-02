@@ -2,6 +2,8 @@ package com.crossover.trial.journals.dto;
 
 import com.crossover.trial.journals.model.Category;
 
+import java.util.Objects;
+
 public class SubscriptionDTO {
 
     private long id;
@@ -41,12 +43,21 @@ public class SubscriptionDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(this instanceof SubscriptionDTO)) {
+            return false;
+        }
 
         SubscriptionDTO that = (SubscriptionDTO) o;
 
         return id == that.id;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
