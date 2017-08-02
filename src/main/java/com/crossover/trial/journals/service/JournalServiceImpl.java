@@ -35,14 +35,19 @@ public class JournalServiceImpl implements JournalService {
 
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private MailService mailService;
 
 	@Override
 	public List<Journal> listAll(User user) {
 		User persistentUser = userRepository.findOne(user.getId());
 		List<Subscription> subscriptions = persistentUser.getSubscriptions();
+		
 		if (subscriptions != null) {
 			List<Long> ids = new ArrayList<>(subscriptions.size());
 			subscriptions.stream().forEach(s -> ids.add(s.getCategory().getId()));
+			
 			return journalRepository.findByCategoryIdIn(ids);
 		} else {
 			return Collections.EMPTY_LIST;
@@ -58,13 +63,20 @@ public class JournalServiceImpl implements JournalService {
 	@Override
 	public Journal publish(Publisher publisher, Journal journal, Long categoryId) throws ServiceException {
 		Category category = categoryRepository.findOne(categoryId);
+		
 		if(category == null) {
 			throw new ServiceException("Category not found");
 		}
+		
 		journal.setPublisher(publisher);
 		journal.setCategory(category);
+		
 		try {
-			return journalRepository.save(journal);
+			Journal result = journalRepository.save(journal);
+			
+			mailService.sendOnPublish(category);
+			
+			return result;
 		} catch (DataIntegrityViolationException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
@@ -73,20 +85,26 @@ public class JournalServiceImpl implements JournalService {
 	@Override
 	public void unPublish(Publisher publisher, Long id) throws ServiceException {
 		Journal journal = journalRepository.findOne(id);
+		
 		if (journal == null) {
 			throw new ServiceException("Journal doesn't exist");
 		}
+		
 		String filePath = PublisherController.getFileName(publisher.getId(), journal.getUuid());
 		File file = new File(filePath);
+		
 		if (file.exists()) {
 			boolean deleted = file.delete();
+			
 			if (!deleted) {
 				log.error("File " + filePath + " cannot be deleted");
 			}
 		}
+		
 		if (!journal.getPublisher().getId().equals(publisher.getId())) {
 			throw new ServiceException("Journal cannot be removed");
 		}
+		
 		journalRepository.delete(journal);
 	}
 }
