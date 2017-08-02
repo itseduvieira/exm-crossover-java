@@ -99,10 +99,10 @@ public class MailServiceImpl implements MailService {
 			
 			StringBuilder message = new StringBuilder();
 			message.append("<h1>Daily Digest</h1><p>List of new journals:</p><ul>");
-			
-			journalsPublishedYesterday.stream().forEach(j -> {
-				message.append("<li>" + j.getName() + "</li>");
-			});
+
+			journalsPublishedYesterday.forEach(j ->
+				message.append("<li>" + j.getName() + "</li>"));
+
 			message.append("</ul>");
 			
 			mailDTO.setSubject("New Journals Published");
