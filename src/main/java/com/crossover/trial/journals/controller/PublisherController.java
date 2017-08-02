@@ -46,7 +46,7 @@ public class PublisherController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/publisher/publish")
 	@PreAuthorize("hasRole('PUBLISHER')")
-	public String handleFileUpload(@RequestParam("name") String name, @RequestParam("category")Long categoryId, @RequestParam("file") MultipartFile file,
+	public String handleFileUpload(@RequestParam("name") String name, @RequestParam("category") Long categoryId, @RequestParam("file") MultipartFile file,
 			RedirectAttributes redirectAttributes, @AuthenticationPrincipal Principal principal) {
 
 		CurrentUser activeUser = (CurrentUser) ((Authentication) principal).getPrincipal();
@@ -60,7 +60,6 @@ public class PublisherController {
 		if (!file.isEmpty()) {
 			try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
 				FileCopyUtils.copy(file.getInputStream(), stream);
-				stream.close();
 				Journal journal = new Journal();
 				journal.setUuid(uuid);
 				journal.setName(name);
