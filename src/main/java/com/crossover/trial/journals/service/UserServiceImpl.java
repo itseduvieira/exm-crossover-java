@@ -39,19 +39,20 @@ public class UserServiceImpl implements UserService {
 		if (subscriptions == null) {
 			subscriptions = new ArrayList<>();
 		}
-		Optional<Subscription> subscr = subscriptions.stream()
-				.filter(s -> s.getCategory().getId().equals(categoryId)).findFirst();
-		if (!subscr.isPresent()) {
-			Subscription s = new Subscription();
-			s.setUser(user);
-			Category category = categoryRepository.findOne(categoryId);
-			if(category == null) {
-				throw new ServiceException("Category not found");
-			}
-			s.setCategory(category);
-			subscriptions.add(s);
-			userRepository.save(user);
+
+		if (subscriptions.stream().anyMatch(s -> s.getCategory().getId().equals(categoryId))) {
+			return;
 		}
+
+		Subscription subscription = new Subscription();
+		subscription.setUser(user);
+		Category category = categoryRepository.findOne(categoryId);
+		if(category == null) {
+			throw new ServiceException("Category not found");
+		}
+		subscription.setCategory(category);
+		subscriptions.add(subscription);
+		userRepository.save(user);
 	}
 
 	@Override
