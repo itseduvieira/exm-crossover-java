@@ -2,7 +2,10 @@ package com.crossover.trial.journals.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -50,7 +53,7 @@ public class JournalServiceImpl implements JournalService {
 			
 			return journalRepository.findByCategoryIdIn(ids);
 		} else {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 	}
 
@@ -106,5 +109,21 @@ public class JournalServiceImpl implements JournalService {
 		}
 		
 		journalRepository.delete(journal);
+	}
+	
+	@Override
+	public List<Journal> listFromYesterday() {
+		Calendar yesterday = new GregorianCalendar();
+		yesterday.set(Calendar.HOUR_OF_DAY, 0);
+		yesterday.set(Calendar.MINUTE, 0);
+		yesterday.set(Calendar.SECOND, 0);
+		yesterday.add(Calendar.DATE, -1);
+		
+		Calendar today = new GregorianCalendar();
+		today.set(Calendar.HOUR_OF_DAY, 0);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		
+		return journalRepository.findByPublishDate(yesterday.getTime(), today.getTime());
 	}
 }

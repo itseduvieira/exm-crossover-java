@@ -15,4 +15,6 @@ public interface JournalService {
 	Journal publish(Publisher publisher, Journal journal, Long categoryId);
 
 	void unPublish(Publisher publisher, Long journalId);
+	
+	List<Journal> listFromYesterday();
 }

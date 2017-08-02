@@ -41,6 +41,9 @@ public class User {
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	private List<Subscription> subscriptions;
+	
+	@Column(nullable = false)
+	private String email;
 
 	public String getLoginName() {
 		return loginName;
@@ -88,5 +91,13 @@ public class User {
 
 	public void setSubscriptions(List<Subscription> subscriptions) {
 		this.subscriptions = subscriptions;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
