@@ -89,6 +89,10 @@ public class JournalServiceImpl implements JournalService {
 		if (journal == null) {
 			throw new ServiceException("Journal doesn't exist");
 		}
+
+		if (!journal.getPublisher().getId().equals(publisher.getId())) {
+			throw new ServiceException("Journal cannot be removed");
+		}
 		
 		String filePath = PublisherController.getFileName(publisher.getId(), journal.getUuid());
 		File file = new File(filePath);
@@ -99,10 +103,6 @@ public class JournalServiceImpl implements JournalService {
 			if (!deleted) {
 				log.error("File " + filePath + " cannot be deleted");
 			}
-		}
-		
-		if (!journal.getPublisher().getId().equals(publisher.getId())) {
-			throw new ServiceException("Journal cannot be removed");
 		}
 		
 		journalRepository.delete(journal);
