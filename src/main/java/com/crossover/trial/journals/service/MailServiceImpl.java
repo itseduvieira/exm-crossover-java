@@ -94,34 +94,35 @@ public class MailServiceImpl implements MailService {
 	
 	@Override
 	public void sendToAllUsers(List<Journal> journalsPublishedYesterday) {
-		if (!journalsPublishedYesterday.isEmpty()) {
-			MailDTO mailDTO = new MailDTO();
-			
-			StringBuilder message = new StringBuilder();
-			message.append("<h1>Daily Digest</h1><p>List of new journals:</p><ul>");
-
-			journalsPublishedYesterday.forEach(j ->
-				message.append("<li>" + j.getName() + "</li>"));
-
-			message.append("</ul>");
-			
-			mailDTO.setSubject("New Journals Published");
-			mailDTO.setMessage(message.toString());
-			
-			List<User> users = userService.findAll();
-			users.stream().forEach(u -> {
-				log.info("Sending digest email to " + u.getEmail());
-				log.info(message.toString());
-				
-				mailDTO.setTo(u.getEmail());
-
-				Optional<Response> response = sendNow(mailDTO);
-				if(response.isPresent()) {
-					log.debug("Status code " + response.get().getStatusCode());
-				}
-			});
-		} else {
+		if (journalsPublishedYesterday.isEmpty()) {
 			log.debug("There is no new journals to send");
+			return;
 		}
+
+		MailDTO mailDTO = new MailDTO();
+
+		StringBuilder message = new StringBuilder();
+		message.append("<h1>Daily Digest</h1><p>List of new journals:</p><ul>");
+
+		journalsPublishedYesterday.forEach(j ->
+			message.append("<li>" + j.getName() + "</li>"));
+
+		message.append("</ul>");
+
+		mailDTO.setSubject("New Journals Published");
+		mailDTO.setMessage(message.toString());
+
+		List<User> users = userService.findAll();
+		users.stream().forEach(u -> {
+			log.info("Sending digest email to " + u.getEmail());
+			log.info(message.toString());
+
+			mailDTO.setTo(u.getEmail());
+
+			Optional<Response> response = sendNow(mailDTO);
+			if(response.isPresent()) {
+				log.debug("Status code " + response.get().getStatusCode());
+			}
+		});
 	}
 }
